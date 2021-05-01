@@ -4,3 +4,4 @@ static const char* timeModuleSource =
 "    foreign static now()\n"
 "    foreign static highResolution()\n"
 "}";
+

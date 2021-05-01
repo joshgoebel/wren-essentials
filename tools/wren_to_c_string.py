@@ -45,15 +45,16 @@ def process_file(path):
   module = module.replace("opt_", "")
   module = module.replace("wren_", "")
 
-  c_source = wren_to_c_string(infile, wren_source_lines, module)
+  return wren_to_c_string(infile, wren_source_lines, module)
 
-  with open(outfile, "w") as f:
-    f.write(c_source)
 
 
 def main():
   files = glob.glob("src/modules/*.wren")
-  for file in files:
-    process_file(file)
+  with open("src/modules/wren_code.inc", "w") as f:
+
+    for file in files:
+      source = process_file(file)
+      f.write(source + "\n")
 
 main()

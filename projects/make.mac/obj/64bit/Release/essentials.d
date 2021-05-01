@@ -5,7 +5,7 @@ obj/64bit/Release/essentials.o: ../../src/essentials.c \
   ../../deps/libuv/include/uv/version.h \
   ../../deps/libuv/include/uv/unix.h \
   ../../deps/libuv/include/uv/threadpool.h \
-  ../../deps/libuv/include/uv/darwin.h ../../src/modules/time.wren.inc
+  ../../deps/libuv/include/uv/darwin.h ../../src/modules/wren_code.inc
 
 ../../src/essentials.h:
 
@@ -25,4 +25,4 @@ obj/64bit/Release/essentials.o: ../../src/essentials.c \
 
 ../../deps/libuv/include/uv/darwin.h:
 
-../../src/modules/time.wren.inc:
+../../src/modules/wren_code.inc:
