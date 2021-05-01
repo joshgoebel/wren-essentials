@@ -31,9 +31,9 @@ def wren_to_c_string(input_path, wren_source_lines, module):
 
   wren_source = wren_source.strip()
 
-  return PREAMBLE.format(input_path, module, wren_source)
+  return PREAMBLE.format("src/modules/*.wren", module, wren_source)
 
-def process_file(path):
+def process_file(path, modules):
   infile = os.path.basename(path)
   outfile = path + ".inc"
   # print("{} => {}").format(path.replace("src/",""), outfile)
@@ -41,20 +41,30 @@ def process_file(path):
   with open(path, "r") as f:
     wren_source_lines = f.readlines()
 
-  module = os.path.splitext(infile)[0]
+  first = wren_source_lines[0]
+  m = re.search(r'#module=(.*)',first)
+  if (m):
+    module = m.group(1)
+  else:
+    module = os.path.splitext(infile)[0]
   module = module.replace("opt_", "")
   module = module.replace("wren_", "")
 
-  return wren_to_c_string(infile, wren_source_lines, module)
+  modules[module] = modules.get(module,[])
+  modules[module].extend(wren_source_lines)
+  # return wren_to_c_string(infile, wren_source_lines, module)
 
 
+module_files = {}
 
 def main():
   files = glob.glob("src/modules/*.wren")
   with open("src/modules/wren_code.inc", "w") as f:
-
+    modules = {}
     for file in files:
-      source = process_file(file)
+      process_file(file, modules)
+    for (module,lines) in modules.items():
+      source = wren_to_c_string("", lines, module)
       f.write(source + "\n")
 
 main()
