@@ -1,0 +1,4 @@
+#module=essentials
+class Strings {
+
+}

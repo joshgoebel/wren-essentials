@@ -39,7 +39,7 @@ def process_file(path, modules):
   # print("{} => {}").format(path.replace("src/",""), outfile)
 
   with open(path, "r") as f:
-    wren_source_lines = f.readlines()
+    wren_source_lines = f.readlines() + ["\n\n"]
 
   first = wren_source_lines[0]
   m = re.search(r'#module=(.*)',first)
