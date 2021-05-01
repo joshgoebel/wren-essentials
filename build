@@ -1,0 +1,5 @@
+#!/bin/sh
+
+./tools/wren_to_c_string.py
+# make -j4 -C projects/make.mac/ clean
+make -j4 -C projects/make.mac/
