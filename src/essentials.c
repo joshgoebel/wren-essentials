@@ -27,7 +27,7 @@
 // The array of built-in modules.
 ModuleRegistry moduleRegistry[] =
 {
-  MODULE(time)
+  MODULE(essentials)
     CLASS(Time)
       STATIC_METHOD("now()", timeNow)
       STATIC_METHOD("highResolution()", timeHighResolution)
