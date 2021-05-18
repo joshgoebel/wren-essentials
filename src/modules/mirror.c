@@ -3,12 +3,61 @@
 #include <string.h>
 #include "wren_vm.h"
 
+#define IS_MODULE(value) (wrenIsObjType(value, OBJ_MODULE))     // ObjModule
+
+// Wren doesn't expose this to us
+static void validateApiSlot(WrenVM* vm, int slot)
+{
+  ASSERT(slot >= 0, "Slot cannot be negative.");
+  ASSERT(slot < wrenGetSlotCount(vm), "Not that many slots.");
+}
+
+Value* wrenSlotAtUnsafe(WrenVM* vm, int slot)
+{
+  validateApiSlot(vm, slot);
+  return &vm->apiStack[slot];
+}
+
+ObjModule* wrenGetModule(WrenVM* vm, Value name)
+{
+  Value moduleValue = wrenMapGet(vm->modules, name);
+  return !IS_UNDEFINED(moduleValue) ? AS_MODULE(moduleValue) : NULL;
+}
+
+static inline Method *wrenClassGetMethod(WrenVM* vm, const ObjClass* classObj,
+                                         int symbol)
+{
+  Method* method;
+  if (symbol >= 0 && symbol < classObj->methods.count &&
+      (method = &classObj->methods.data[symbol])->type != METHOD_NONE)
+  {
+    return method;
+  }
+  return NULL;
+}
+
+void wrenSetSlot(WrenVM* vm, int slot, Value value)
+{
+  validateApiSlot(vm, slot);
+  vm->apiStack[slot] = value;
+}
+
+/* ^------------------ Wren extensions */
+
 static ObjClass* mirrorGetSlotClass(WrenVM* vm, int slot)
 {
   Value classVal = vm->apiStack[slot];
   if (!IS_CLASS(classVal)) return NULL;
 
   return AS_CLASS(classVal);
+}
+
+static ObjClosure* mirrorGetSlotClosure(WrenVM* vm, int slot)
+{
+  Value closureVal = *wrenSlotAtUnsafe(vm, slot);
+  if (!IS_CLOSURE(closureVal)) return NULL;
+
+  return AS_CLOSURE(closureVal);
 }
 
 static ObjFiber* mirrorGetSlotFiber(WrenVM* vm, int slot)
@@ -19,7 +68,15 @@ static ObjFiber* mirrorGetSlotFiber(WrenVM* vm, int slot)
   return AS_FIBER(fiberVal);
 }
 
-static void mirrorClassMirrorAllAttributes(WrenVM* vm)
+static ObjModule* mirrorGetSlotModule(WrenVM* vm, int slot)
+{
+  Value moduleVal = *wrenSlotAtUnsafe(vm, slot);
+  if (!IS_MODULE(moduleVal)) return NULL;
+
+  return AS_MODULE(moduleVal);
+}
+
+ void mirrorClassMirrorAllAttributes(WrenVM* vm)
 {
   ObjClass* classObj = mirrorGetSlotClass(vm, 1);
 
@@ -33,7 +90,7 @@ static void mirrorClassMirrorAllAttributes(WrenVM* vm)
   }
 }
 
-static void mirrorClassMirrorHasMethod(WrenVM* vm)
+ void mirrorClassMirrorHasMethod(WrenVM* vm)
 {
   ObjClass* classObj = mirrorGetSlotClass(vm, 1);
   const char* method = wrenGetSlotString(vm, 2);
@@ -48,7 +105,7 @@ static void mirrorClassMirrorHasMethod(WrenVM* vm)
   wrenSetSlotBool(vm, 0, hasMethod);
 }
 
-static void mirrorClassMirrorMethodNames(WrenVM* vm)
+ void mirrorClassMirrorMethodNames(WrenVM* vm)
 {
   ObjClass* classObj = mirrorGetSlotClass(vm, 1);
 
@@ -69,7 +126,7 @@ static void mirrorClassMirrorMethodNames(WrenVM* vm)
   }
 }
 
-static void mirrorFiberFunctionAt(WrenVM* vm)
+ void mirrorFiberMirrorMethodAt(WrenVM* vm)
 {
   ObjFiber* fiber = mirrorGetSlotFiber(vm, 1);
   size_t index = wrenGetSlotDouble(vm, 2);
@@ -81,10 +138,10 @@ static void mirrorFiberFunctionAt(WrenVM* vm)
     wrenSetSlotNull(vm, 0);
     return;
   }
-  wrenSetSlot(vm, 0, OBJ_VAL(frame->closure));
+  *wrenSlotAtUnsafe(vm, 0) = OBJ_VAL(frame->closure);
 }
 
-static void mirrorFiberLineAt(WrenVM* vm)
+ void mirrorFiberLineAt(WrenVM* vm)
 {
   ObjFiber* fiber = mirrorGetSlotFiber(vm, 1);
   size_t index = wrenGetSlotDouble(vm, 2);
@@ -105,7 +162,7 @@ static void mirrorFiberLineAt(WrenVM* vm)
   wrenSetSlotDouble(vm, 0, line);
 }
 
-static void mirrorFiberStackFramesCount(WrenVM* vm)
+ void mirrorFiberStackFramesCount(WrenVM* vm)
 {
   ObjFiber* fiber = mirrorGetSlotFiber(vm, 1);
 
@@ -114,72 +171,93 @@ static void mirrorFiberStackFramesCount(WrenVM* vm)
     wrenSetSlotNull(vm, 0);
     return;
   }
-
   wrenSetSlotDouble(vm, 0, fiber->numFrames);
 }
 
-static void mirrorObjectMirrorCanInvoke(WrenVM* vm)
+void mirrorMethodMirrorModule_(WrenVM* vm)
+{
+  ObjClosure* closureObj = mirrorGetSlotClosure(vm, 1);
+
+  if (!closureObj)
+  {
+    wrenSetSlotNull(vm, 0);
+    return;
+  }
+
+  *wrenSlotAtUnsafe(vm, 0) = OBJ_VAL(closureObj->fn->module);
+}
+
+void mirrorMethodMirrorSignature_(WrenVM* vm)
+{
+  ObjClosure* closureObj = mirrorGetSlotClosure(vm, 1);
+
+  if (!closureObj)
+  {
+    wrenSetSlotNull(vm, 0);
+    return;
+  }
+
+  wrenSetSlotString(vm, 0, closureObj->fn->debug->name);
+}
+
+void mirrorModuleMirrorFromName_(WrenVM* vm)
+{
+  const char* moduleName = wrenGetSlotString(vm, 1);
+
+  if (!moduleName)
+  {
+    wrenSetSlotNull(vm, 0);
+    return;
+  }
+
+  // Special case for "core"
+  if (strcmp(moduleName, "core") == 0)
+  {
+    wrenSetSlotNull(vm, 1);
+  }
+
+  ObjModule* module = wrenGetModule(vm, *wrenSlotAtUnsafe(vm, 1));
+  if (module != NULL)
+  {
+    *wrenSlotAtUnsafe(vm, 0) = OBJ_VAL(module);
+  }
+  else
+  {
+    wrenSetSlotNull(vm, 0);
+  }
+}
+
+void mirrorModuleMirrorName_(WrenVM* vm)
+{
+  ObjModule* moduleObj = mirrorGetSlotModule(vm, 1);
+  if (!moduleObj)
+  {
+    wrenSetSlotNull(vm, 0);
+    return;
+  }
+
+  if (moduleObj != NULL)
+  {
+    if (moduleObj->name)
+    {
+      *wrenSlotAtUnsafe(vm, 0) = OBJ_VAL(moduleObj->name);
+    }
+    else
+    {
+      // Special case for "core"
+      wrenSetSlotString(vm, 0, "core");
+    }
+  }
+  else
+  {
+    wrenSetSlotNull(vm, 0);
+  }
+}
+
+ void mirrorObjectMirrorCanInvoke(WrenVM* vm)
 {
   ObjClass* classObj = wrenGetClassInline(vm, vm->apiStack[1]);
   vm->apiStack[1] = OBJ_VAL(classObj);
 
   mirrorClassMirrorHasMethod(vm);
 }
-
-WrenForeignMethodFn wrenMirrorBindForeignMethod(WrenVM* vm,
-                                                const char* className,
-                                                bool isStatic,
-                                                const char* signature)
-{
-  if (strcmp(className, "ClassMirror") == 0)
-  {
-    if (isStatic &&
-        strcmp(signature, "allAttributes(_)") == 0)
-    {
-      return mirrorClassMirrorAllAttributes;
-    }
-
-    if (isStatic &&
-        strcmp(signature, "hasMethod(_,_)") == 0)
-    {
-      return mirrorClassMirrorHasMethod;
-    }
-    if (isStatic &&
-        strcmp(signature, "methodNames(_)") == 0)
-    {
-      return mirrorClassMirrorMethodNames;
-    }
-  }
-
-  if (strcmp(className, "FiberMirror") == 0)
-  {
-    if (isStatic &&
-        strcmp(signature, "functionAt_(_,_)") == 0)
-    {
-      return mirrorFiberFunctionAt;
-    }
-    if (isStatic &&
-        strcmp(signature, "lineAt_(_,_)") == 0)
-    {
-      return mirrorFiberLineAt;
-    }
-    if (isStatic &&
-        strcmp(signature, "stackFramesCount_(_)") == 0)
-    {
-      return mirrorFiberStackFramesCount;
-    }
-  }
-
-  if (strcmp(className, "ObjectMirror") == 0)
-  {
-    if (isStatic &&
-        strcmp(signature, "canInvoke(_,_)") == 0)
-    {
-      return mirrorObjectMirrorCanInvoke;
-    }
-  }
-
-  ASSERT(false, "Unknown method.");
-  return NULL;
-}
-

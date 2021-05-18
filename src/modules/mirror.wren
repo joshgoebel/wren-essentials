@@ -1,4 +1,6 @@
 
+// FIXME: Add cache.
+
 class Mirror {
   static reflect(reflectee) {
     var mirror = ObjectMirror
@@ -16,62 +18,45 @@ class ObjectMirror is Mirror {
     _reflectee = reflectee
   }
 
-  canInvoke(methodName) { ObjectMirror.canInvoke(_reflectee, methodName) }
+  classMirror {
+    if (_classMirror == null) _classMirror = Mirror.reflect(_reflectee.type)
+    return _classMirror
+  }
+
+  moduleMirror { classMirror.moduleMirror }
 
   reflectee { _reflectee }
 
-  type { ClassMirror.new_(_reflectee) }
+  canInvoke(signature) { classMirror.hasMethod(signature) }
 }
 
 class ClassMirror is ObjectMirror {
   foreign static allAttributes(reflectee)
-  foreign static hasMethod(reflectee, methodName)
+  foreign static hasMethod(reflectee, signature)
   foreign static methodNames(reflectee)
 
   construct new_(reflectee) {
     super(reflectee)
+    _moduleMirror = null
+
     _methods = ClassMirror.methodNames(reflectee)
   }
+
+  moduleMirror { _moduleMirror }
 
   attributes {
     var attr = ClassMirror.allAttributes(reflectee)
     return attr != null ? attr.self : null
   }
 
-  hasMethod(methodName) { ClassMirror.hasMethod(reflectee, methodName) }
+  hasMethod(signature) { ClassMirror.hasMethod(reflectee, signature) }
 
-  methods { _methods }
-}
-
-class MethodMirror is Mirror {
-  construct new_(class_, signature) {
-    _class = class_
-    _signature = signature
-  }
-
-  attributes {
-    var attr = ClassMirror.allAttributes(_class)
-    var methods = attr != null ? attr.methods : null
-    return methods != null ? methods[signature] : null
-  }
-
-  signature { _signature }
-}
-
-class StackTraceAccumulator_ {
-  construct new() {
-    _stackTrace = []
-  }
-
-  call(fn, line) {
-    _stackTrace.add("at %( fn.module.name ):%( fn.name ) line %( line )")
-  }
-
-  toString { _stackTrace.join("\n") }
+  methodNames { _methodNames }
+  methodMirrors { _methodMirrors }
 }
 
 class FiberMirror is ObjectMirror {
-  foreign static functionAt_(reflectee, stackTraceIndex)
+  foreign static methodAt_(reflectee, stackTraceIndex)
   foreign static lineAt_(reflectee, stackTraceIndex)
   foreign static stackFramesCount_(reflectee)
 
@@ -79,39 +64,90 @@ class FiberMirror is ObjectMirror {
     super(reflectee)
   }
 
-  functionAt(stackTraceIndex) { FiberMirror.functionAt_(reflectee, stackTraceIndex) }
-  lineAt_(stackTraceIndex)    { FiberMirror.lineAt_(reflectee, stackTraceIndex) }
-  stackFramesCount            { FiberMirror.stackFramesCount_(reflectee) }
-
-  fullStackTrace {
-    var stackTraceAccumulator = StackTraceAccumulator_.new()
-    fullStackTrace(stackTraceAccumulator)
-    return stackTraceAccumulator.toString
-  }
-
-  fullStackTrace(cb) { fullStackTrace(cb) { true } }
-
-  fullStackTrace(cb, filter) {
-    for (stackTraceIndex in (stackFramesCount - 1)..0) {
-      var fn   = functionAt(stackTraceIndex)
-      var line = lineAt(stackTraceIndex)
-
-      if (filter.call(fn, line)) {
-        cb.call(fn, line)
-      }
-    }
-    return cb
-  }
+  lineAt(stackTraceIndex)   { FiberMirror.lineAt_(reflectee, stackTraceIndex) }
+  methodAt(stackTraceIndex) { FiberMirror.methodAt_(reflectee, stackTraceIndex) }
+  stackFramesCount          { FiberMirror.stackFramesCount_(reflectee) }
 
   stackTrace {
-    var stackTraceAccumulator = StackTraceAccumulator_.new()
-    stackTrace(stackTraceAccumulator)
-    return stackTraceAccumulator.toString
+    var reflectee = this.reflectee
+    var stackFramesCount = FiberMirror.stackFramesCount_(reflectee)
+    if (reflectee == Fiber.current) stackFramesCount = stackFramesCount - 1
+    return StackTrace.new_(reflectee, stackFramesCount)
+  }
+}
+
+class MethodMirror is Mirror {
+  foreign static module_(method)
+  foreign static signature_(method)
+
+  construct new_(method/*, classMirror, signature*/) {
+    _method = method
   }
 
-  stackTrace(cb) {
-    return fullStackTrace(cb) {|fn, line|
-      Fiber.abort("IMPLEMENT ME")
+//  classMirror { Mirror.reflect(MethodMirror.class_(_method)) }
+  moduleMirror { ModuleMirror.fromModule_(MethodMirror.module_(_method)) }
+
+//  arity { MethodMirror.arity_(_method) }
+//  maxSlots { MethodMirror.maxSlots_(_method) }
+//  numUpvalues { MethodMirror.maxSlots_(_numUpvalues) }
+  signature { MethodMirror.signature_(_method) }
+
+  attributes {
+    var attr = ClassMirror.allAttributes(_class)
+    var methods = attr != null ? attr.methods : null
+    return methods != null ? methods[signature] : null
+  }
+}
+
+class ModuleMirror is Mirror {
+  foreign static fromName_(name)
+  foreign static name_(reflectee)
+
+  static fromModule_(module) {
+    return ModuleMirror.new_(module)
+  }
+
+  static fromName(name) {
+    var module = fromName_(name)
+    if (null == module) Fiber.abort("Unkown module")
+
+    return ModuleMirror.fromModule_(module)
+  }
+
+  construct new_(reflectee) {
+    _reflectee = reflectee
+  }
+
+  name { ModuleMirror.name_(_reflectee) }
+}
+
+class StackTrace {
+  construct new_(fiber, stackFramesCount) {
+    _fiber = fiber
+    _stackTrace = []
+    for (i in 0...stackFramesCount) {
+      _stackTrace.add(StackTraceFrame.new_(fiber, i))
     }
   }
+
+  static new(fiber) {
+    var stackFramesCount = FiberMirror.stackFramesCount_(fiber)
+
+    return new_(fiber, stackFramesCount)
+  }
+
+  toString { _stackTrace.join("\n") }
+}
+
+class StackTraceFrame {
+  construct new_(fiber, stackFramesIndex) {
+    _line = FiberMirror.lineAt_(fiber, stackFramesIndex)
+    _methodMirror = MethodMirror.new_(FiberMirror.methodAt_(fiber, stackFramesIndex))
+  }
+
+  line { _line }
+  methodMirror { _methodMirror }
+
+  // toString { "at %( _methodMirror.moduleMirror.name ): %( _methodMirror.signature ) line %( _line )" }
+  toString { "at %( _methodMirror.moduleMirror.name ): %( _methodMirror.signature ) line %( _line )" }
 }

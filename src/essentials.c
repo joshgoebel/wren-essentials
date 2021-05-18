@@ -1,6 +1,7 @@
 #include "essentials.h"
 
 #include "modules/time.h"
+#include "modules/mirror.h"
 #include "modules/wren_code.inc"
 
 
@@ -27,6 +28,29 @@
 // The array of built-in modules.
 ModuleRegistry moduleRegistry[] =
 {
+  MODULE(mirror)
+    CLASS(ClassMirror)
+      STATIC_METHOD("allAttributes(_)", mirrorClassMirrorAllAttributes)
+      STATIC_METHOD("hasMethod(_,_)", mirrorClassMirrorHasMethod)
+      STATIC_METHOD("methodNames(_)",mirrorClassMirrorMethodNames)
+    END_CLASS
+    CLASS(FiberMirror)
+      STATIC_METHOD("methodAt_(_,_)", mirrorFiberMirrorMethodAt)
+      STATIC_METHOD("lineAt_(_,_)",mirrorFiberLineAt)
+      STATIC_METHOD("stackFramesCount_(_)",mirrorFiberStackFramesCount)
+     END_CLASS
+    CLASS(MethodMirror)
+      STATIC_METHOD("module_(_)", mirrorMethodMirrorModule_)
+      STATIC_METHOD("signature_(_)", mirrorMethodMirrorSignature_)
+    END_CLASS
+    CLASS(ObjectMirror)
+      STATIC_METHOD("canInvoke(_,_)", mirrorObjectMirrorCanInvoke)
+    END_CLASS
+    CLASS(ModuleMirror)
+      STATIC_METHOD("fromName_(_)", mirrorModuleMirrorFromName_)
+      STATIC_METHOD("name_(_)", mirrorModuleMirrorName_)
+    END_CLASS
+  END_MODULE
   MODULE(essentials)
     CLASS(Time)
       STATIC_METHOD("now()", timeNow)

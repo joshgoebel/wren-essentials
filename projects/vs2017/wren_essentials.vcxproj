@@ -332,6 +332,7 @@
     <ClInclude Include="..\..\deps\wren\src\vm\wren_value.h" />
     <ClInclude Include="..\..\deps\wren\src\vm\wren_vm.h" />
     <ClInclude Include="..\..\src\essentials.h" />
+    <ClInclude Include="..\..\src\modules\mirror.h" />
     <ClInclude Include="..\..\src\modules\time.h" />
   </ItemGroup>
   <ItemGroup>
@@ -380,10 +381,11 @@
     <ClCompile Include="..\..\deps\wren\src\vm\wren_value.c" />
     <ClCompile Include="..\..\deps\wren\src\vm\wren_vm.c" />
     <ClCompile Include="..\..\src\essentials.c" />
+    <ClCompile Include="..\..\src\modules\mirror.c" />
     <ClCompile Include="..\..\src\modules\time.c" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\src\modules\time.wren.inc" />
+    <None Include="..\..\src\modules\wren_code.inc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

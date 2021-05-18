@@ -114,6 +114,7 @@ GENERATED += $(OBJDIR)/linux-inotify.o
 GENERATED += $(OBJDIR)/linux-syscalls.o
 GENERATED += $(OBJDIR)/loop-watcher.o
 GENERATED += $(OBJDIR)/loop.o
+GENERATED += $(OBJDIR)/mirror.o
 GENERATED += $(OBJDIR)/pipe.o
 GENERATED += $(OBJDIR)/poll.o
 GENERATED += $(OBJDIR)/process.o
@@ -161,6 +162,7 @@ OBJECTS += $(OBJDIR)/linux-inotify.o
 OBJECTS += $(OBJDIR)/linux-syscalls.o
 OBJECTS += $(OBJDIR)/loop-watcher.o
 OBJECTS += $(OBJDIR)/loop.o
+OBJECTS += $(OBJDIR)/mirror.o
 OBJECTS += $(OBJDIR)/pipe.o
 OBJECTS += $(OBJDIR)/poll.o
 OBJECTS += $(OBJDIR)/process.o
@@ -392,6 +394,9 @@ $(OBJDIR)/wren_vm.o: ../../deps/wren/src/vm/wren_vm.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/essentials.o: ../../src/essentials.c
+	@echo $(notdir $<)
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/mirror.o: ../../src/modules/mirror.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/time.o: ../../src/modules/time.c

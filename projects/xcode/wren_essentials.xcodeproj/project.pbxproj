@@ -36,6 +36,7 @@
 		A98FF85D3F06B78FADA30E9D /* idna.c in Sources */ = {isa = PBXBuildFile; fileRef = A56717E5D4F8E6D7B0062625 /* idna.c */; };
 		AAE7A4AAEF364A1C315D82EA /* fs.c in Sources */ = {isa = PBXBuildFile; fileRef = 898D2692AB58D3C4E80DFCD2 /* fs.c */; };
 		B5D513B478957426D5CA51F4 /* fsevents.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F08F3FC434FFC2EC73D2A3C /* fsevents.c */; };
+		B76B3C97FBB9E2093DE11AD7 /* mirror.c in Sources */ = {isa = PBXBuildFile; fileRef = 6752E03F891E8D71C5D3B67F /* mirror.c */; };
 		B812A9B9972FC3EB73391FF9 /* wren_core.c in Sources */ = {isa = PBXBuildFile; fileRef = A6A2BB4139308533A2092981 /* wren_core.c */; };
 		B9777BA42DD1C096ABB549E4 /* proctitle.c in Sources */ = {isa = PBXBuildFile; fileRef = B7ECC7ECCA16A49EFE078E2C /* proctitle.c */; };
 		C1893749DC55A5FBE0263D89 /* wren_utils.c in Sources */ = {isa = PBXBuildFile; fileRef = B6BDE0D123E5EF432578DF11 /* wren_utils.c */; };
@@ -79,6 +80,7 @@
 		3E7434F5706D7FA7EA4CBB35 /* unix.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = unix.h; path = ../../deps/libuv/include/uv/unix.h; sourceTree = "<group>"; };
 		3F14C04B967A333D48884E8B /* wren_common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = wren_common.h; path = ../../deps/wren/src/vm/wren_common.h; sourceTree = "<group>"; };
 		3F5FB0CE8CC2A70002E1A70E /* poll.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = poll.c; path = ../../deps/libuv/src/unix/poll.c; sourceTree = "<group>"; };
+		426F89831092DD3597A12FC3 /* wren_code.inc */ = {isa = PBXFileReference; lastKnownFileType = text; name = wren_code.inc; path = ../../src/modules/wren_code.inc; sourceTree = "<group>"; };
 		456D6BEEDDBA51A00C01522E /* getaddrinfo.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = getaddrinfo.c; path = ../../deps/libuv/src/unix/getaddrinfo.c; sourceTree = "<group>"; };
 		46315B7C939451AE09B351BC /* pipe.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = pipe.c; path = ../../deps/libuv/src/unix/pipe.c; sourceTree = "<group>"; };
 		46A71BF8778B13EA8AA34A38 /* libwren_essentials.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; name = libwren_essentials.dylib; path = libwren_essentials.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -91,6 +93,7 @@
 		5F08F3FC434FFC2EC73D2A3C /* fsevents.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = fsevents.c; path = ../../deps/libuv/src/unix/fsevents.c; sourceTree = "<group>"; };
 		5F4494DD5906514F9305531D /* strscpy.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = strscpy.c; path = ../../deps/libuv/src/strscpy.c; sourceTree = "<group>"; };
 		614DE241BC8F35B38FE98081 /* queue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = queue.h; path = ../../deps/libuv/src/queue.h; sourceTree = "<group>"; };
+		6752E03F891E8D71C5D3B67F /* mirror.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = mirror.c; path = ../../src/modules/mirror.c; sourceTree = "<group>"; };
 		6B50E6F2B8B3DD242ED2DD32 /* core.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = core.c; path = ../../deps/libuv/src/unix/core.c; sourceTree = "<group>"; };
 		6CB9D7B05100DFE2D4EE0DF0 /* spinlock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = spinlock.h; path = ../../deps/libuv/src/unix/spinlock.h; sourceTree = "<group>"; };
 		6D17D7650F017357062885A5 /* wren_compiler.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = wren_compiler.c; path = ../../deps/wren/src/vm/wren_compiler.c; sourceTree = "<group>"; };
@@ -104,6 +107,7 @@
 		8B785739853A13ABBF391579 /* version.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = version.c; path = ../../deps/libuv/src/version.c; sourceTree = "<group>"; };
 		91FD967255695824940CFCB2 /* udp.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = udp.c; path = ../../deps/libuv/src/unix/udp.c; sourceTree = "<group>"; };
 		94C80D112D14F2C35B5BF351 /* threadpool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = threadpool.h; path = ../../deps/libuv/include/uv/threadpool.h; sourceTree = "<group>"; };
+		9638F449B804A17BF4B9CA89 /* mirror.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = mirror.h; path = ../../src/modules/mirror.h; sourceTree = "<group>"; };
 		99115178A59C03EA2080CFB8 /* wren_opt_random.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = wren_opt_random.c; path = ../../deps/wren/src/optional/wren_opt_random.c; sourceTree = "<group>"; };
 		9E3102CD30BECCBF9997710D /* wren_math.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = wren_math.h; path = ../../deps/wren/src/vm/wren_math.h; sourceTree = "<group>"; };
 		A0902DE163508E53C0856C21 /* wren_primitive.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = wren_primitive.c; path = ../../deps/wren/src/vm/wren_primitive.c; sourceTree = "<group>"; };
@@ -122,7 +126,6 @@
 		B7ECC7ECCA16A49EFE078E2C /* proctitle.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = proctitle.c; path = ../../deps/libuv/src/unix/proctitle.c; sourceTree = "<group>"; };
 		BAC2AD79FF1152EB41388BB9 /* uv-common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "uv-common.h"; path = "../../deps/libuv/src/uv-common.h"; sourceTree = "<group>"; };
 		BD161D04B115667636007B44 /* wren_opt_meta.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = wren_opt_meta.c; path = ../../deps/wren/src/optional/wren_opt_meta.c; sourceTree = "<group>"; };
-		BEDDA4E98D00F89B140F4B29 /* time.wren.inc */ = {isa = PBXFileReference; lastKnownFileType = text; name = time.wren.inc; path = ../../src/modules/time.wren.inc; sourceTree = "<group>"; };
 		C433714059AA3072C8468780 /* kqueue.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = kqueue.c; path = ../../deps/libuv/src/unix/kqueue.c; sourceTree = "<group>"; };
 		C6D53254143828868A572894 /* loop.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = loop.c; path = ../../deps/libuv/src/unix/loop.c; sourceTree = "<group>"; };
 		C7206A03D7059635C3792043 /* android-ifaddrs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "android-ifaddrs.h"; path = "../../deps/libuv/include/uv/android-ifaddrs.h"; sourceTree = "<group>"; };
@@ -202,9 +205,11 @@
 		5D3D5CB1002B83638F5162F1 /* modules */ = {
 			isa = PBXGroup;
 			children = (
+				6752E03F891E8D71C5D3B67F /* mirror.c */,
+				9638F449B804A17BF4B9CA89 /* mirror.h */,
 				FC9589E745066E1989A54027 /* time.c */,
 				5E4D78B1A6BE5CE3EB5D2EF1 /* time.h */,
-				BEDDA4E98D00F89B140F4B29 /* time.wren.inc */,
+				426F89831092DD3597A12FC3 /* wren_code.inc */,
 			);
 			name = modules;
 			sourceTree = "<group>";
@@ -473,6 +478,7 @@
 				3EE5E6A159B255535D82ECE1 /* wren_value.c in Sources */,
 				21B20AAD65C5DBDF599760ED /* wren_vm.c in Sources */,
 				FBFDB5AF404C5B21827393EF /* essentials.c in Sources */,
+				B76B3C97FBB9E2093DE11AD7 /* mirror.c in Sources */,
 				2358FABF1D1AB7315719B8FF /* time.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

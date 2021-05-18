@@ -171,6 +171,9 @@
     <ClInclude Include="..\..\src\essentials.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\modules\mirror.h">
+      <Filter>src\modules</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\modules\time.h">
       <Filter>src\modules</Filter>
     </ClInclude>
@@ -311,12 +314,15 @@
     <ClCompile Include="..\..\src\essentials.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\modules\mirror.c">
+      <Filter>src\modules</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\modules\time.c">
       <Filter>src\modules</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\src\modules\time.wren.inc">
+    <None Include="..\..\src\modules\wren_code.inc">
       <Filter>src\modules</Filter>
     </None>
   </ItemGroup>
