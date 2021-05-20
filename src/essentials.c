@@ -26,7 +26,7 @@
 #define FINALIZE(fn) { true, "<finalize>", (WrenForeignMethodFn)fn },
 
 // The array of built-in modules.
-ModuleRegistry moduleRegistry[] =
+ModuleRegistry essentialRegistry[] =
 {
   MODULE(mirror)
     CLASS(ClassMirror)
@@ -63,7 +63,7 @@ ModuleRegistry moduleRegistry[] =
 
 // this the API we export as a dynamic library
 ModuleRegistry* returnRegistry() {
-  return moduleRegistry;
+  return essentialRegistry;
 }
 
 
