@@ -129,13 +129,14 @@ class StackTrace {
       _stackTrace.add(StackTraceFrame.new_(fiber, i))
     }
   }
-
+  
   static new(fiber) {
     var stackFramesCount = FiberMirror.stackFramesCount_(fiber)
 
     return new_(fiber, stackFramesCount)
   }
 
+  frames { _stackTrace }
   toString { _stackTrace.join("\n") }
 }
 
