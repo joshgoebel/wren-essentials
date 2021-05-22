@@ -4,6 +4,6 @@
 #include "wren.h"
 #include "binary_libs.h"
 
-ModuleRegistry essentialRegistry[];
+extern ModuleRegistry essentialRegistry[];
 
 #endif
