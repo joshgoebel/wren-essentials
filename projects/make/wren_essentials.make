@@ -19,7 +19,7 @@ endif
 # #############################################
 
 RESCOMP = windres
-INCLUDES += -I../../src/cli -I../../src/module -I../../deps/wren/include -I../../deps/wren/src/vm -I../../deps/wren/src/optional -I../../deps/libuv/include -I../../deps/libuv/src
+INCLUDES += -I../../src/cli -I../../src/module -I../../deps/wren/include -I../../deps/wren/src/vm -I../../deps/wren/src/optional -I../../src/vendor -I../../deps/libuv/include -I../../deps/libuv/src
 FORCE_INCLUDE +=
 ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
 ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
@@ -109,12 +109,14 @@ GENERATED += $(OBJDIR)/getaddrinfo.o
 GENERATED += $(OBJDIR)/getnameinfo.o
 GENERATED += $(OBJDIR)/idna.o
 GENERATED += $(OBJDIR)/inet.o
+GENERATED += $(OBJDIR)/json.o
 GENERATED += $(OBJDIR)/linux-core.o
 GENERATED += $(OBJDIR)/linux-inotify.o
 GENERATED += $(OBJDIR)/linux-syscalls.o
 GENERATED += $(OBJDIR)/loop-watcher.o
 GENERATED += $(OBJDIR)/loop.o
 GENERATED += $(OBJDIR)/mirror.o
+GENERATED += $(OBJDIR)/pdjson.o
 GENERATED += $(OBJDIR)/pipe.o
 GENERATED += $(OBJDIR)/poll.o
 GENERATED += $(OBJDIR)/process.o
@@ -157,12 +159,14 @@ OBJECTS += $(OBJDIR)/getaddrinfo.o
 OBJECTS += $(OBJDIR)/getnameinfo.o
 OBJECTS += $(OBJDIR)/idna.o
 OBJECTS += $(OBJDIR)/inet.o
+OBJECTS += $(OBJDIR)/json.o
 OBJECTS += $(OBJDIR)/linux-core.o
 OBJECTS += $(OBJDIR)/linux-inotify.o
 OBJECTS += $(OBJDIR)/linux-syscalls.o
 OBJECTS += $(OBJDIR)/loop-watcher.o
 OBJECTS += $(OBJDIR)/loop.o
 OBJECTS += $(OBJDIR)/mirror.o
+OBJECTS += $(OBJDIR)/pdjson.o
 OBJECTS += $(OBJDIR)/pipe.o
 OBJECTS += $(OBJDIR)/poll.o
 OBJECTS += $(OBJDIR)/process.o
@@ -396,10 +400,16 @@ $(OBJDIR)/wren_vm.o: ../../deps/wren/src/vm/wren_vm.c
 $(OBJDIR)/essentials.o: ../../src/essentials.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/json.o: ../../src/modules/json.c
+	@echo $(notdir $<)
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/mirror.o: ../../src/modules/mirror.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/time.o: ../../src/modules/time.c
+	@echo $(notdir $<)
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/pdjson.o: ../../src/vendor/pdjson.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 

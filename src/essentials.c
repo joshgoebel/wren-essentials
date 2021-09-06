@@ -2,8 +2,8 @@
 
 #include "modules/time.h"
 #include "modules/mirror.h"
+#include "modules/json.h"
 #include "modules/wren_code.inc"
-
 
 
 
@@ -55,6 +55,19 @@ ModuleRegistry essentialRegistry[] =
     CLASS(Time)
       STATIC_METHOD("now()", timeNow)
       STATIC_METHOD("highResolution()", timeHighResolution)
+    END_CLASS
+  END_MODULE
+
+  MODULE(json)
+    CLASS(JsonStream)
+      METHOD("stream_begin(_)", jsonStreamBegin)
+      METHOD("stream_end()", jsonStreamEnd)
+      METHOD("next", jsonStreamNext)
+      METHOD("value", jsonStreamValue)
+      METHOD("error_message", jsonStreamErrorMessage)
+      METHOD("lineno", jsonStreamLineNumber)
+      METHOD("pos", jsonStreamPos)
+      STATIC_METHOD("escapechar(_,_)", jsonStreamEscapeChar)
     END_CLASS
   END_MODULE
 

@@ -74,6 +74,16 @@ project "wren_essentials"
     "../../deps/wren/src/optional"
   }
 
+  -- vendor dependency
+  files {
+    "../../src/vendor/**.h",
+    "../../src/vendor/**.c",
+  }
+
+  includedirs {
+    "../../src/vendor"
+  }
+
 -- libuv dependency
 
   includedirs {
