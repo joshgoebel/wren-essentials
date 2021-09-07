@@ -39,7 +39,7 @@ class JsonStream {
   foreign pos
   foreign static escapechar(value, options)
 
-  namespace { "com.domeengine.json:" }
+  namespace { "wren-essentials.json:" }
   isNull { namespace + "JSON_NULL" }
   isString { namespace + "JSON_STRING" }
   isNumeric { namespace + "JSON_NUMBER" }
