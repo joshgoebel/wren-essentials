@@ -1,4 +1,5 @@
-// extracted from https://raw.githubusercontent.com/domeengine/dome/2f129cc721076189b597c4a052ff70b538efaf3b/src/modules/json.wren
+// Extracted from https://github.com/domeengine/dome/blob/develop/src/modules/json.wren
+
 class JsonOptions {
   static nil { 0 }
   static escapeSlashes { 1 }
@@ -38,7 +39,7 @@ class JsonStream {
   foreign pos
   foreign static escapechar(value, options)
 
-  namespace { "wren-essentials.json:" }
+  namespace { "com.domeengine.json:" }
   isNull { namespace + "JSON_NULL" }
   isString { namespace + "JSON_STRING" }
   isNumeric { namespace + "JSON_NUMBER" }
@@ -81,8 +82,7 @@ class JsonStream {
       _error = JsonError.new(lineno, pos, error_message, true)
       if (JsonOptions.contains(_options, JsonOptions.abortOnError)) {
         end()
-        //Fiber.abort("JSON error - line %(lineno) pos %(pos): %(error_message)")
-        Fiber.abort(_error)
+        Fiber.abort("JSON error - line %(lineno) pos %(pos): %(error_message)")
       }
       return
     }
@@ -141,7 +141,12 @@ class JsonEncoder {
     _circularStack = JsonOptions.contains(options, JsonOptions.checkCircular) ? [] : null
   }
 
-  isCircle(value) { _circularStack == null || !_circularStack.any { |v| Object.same(value, v) } }
+  isCircle(value) {
+    if (_circularStack == null) {
+      return false
+    }
+    return _circularStack.any { |v| Object.same(value, v) }
+  }
 
   push(value) {
     if (_circularStack != null) {
@@ -156,7 +161,6 @@ class JsonEncoder {
 
   encode(value) {
     if (isCircle(value)) {
-      // TODO: make this an Error Object
       Fiber.abort("Circular JSON")
     }
 
@@ -179,20 +183,27 @@ class JsonEncoder {
 
     if (value is List) {
       push(value)
-      var substrings = value.map { |item| encode(item) }
+      var substrings = []
+      for (item in value) {
+        substrings.add(encode(item))
+      }
       pop()
       return "[" + substrings.join(",") + "]"
     }
 
     if (value is Map) {
       push(value)
-      var substrings = value.keys.map { |key| "%(encode(key)):%(encode(value[key]))" }
+      var substrings = []
+      for (key in value.keys) {
+        var keyValue = this.encode(value[key])
+        var encodedKey = this.encode(key)
+        substrings.add("%(encodedKey):%(keyValue)")
+      }
       pop()
       return "{" + substrings.join(",") + "}"
     }
 
     // Default behaviour is to invoke the toString method
-    // TODO: Make this a protocol like Codable
     return value.toString
   }
 }
@@ -223,7 +234,6 @@ class Json {
   }
 }
 
-// aliases
 var JSON = Json
 var JSONOptions = JsonOptions
 var JSONError = JsonError
