@@ -3,8 +3,8 @@
 #include "modules/strings.h"
 #include "modules/time.h"
 #include "modules/mirror.h"
+#include "modules/json.h"
 #include "modules/wren_code.inc"
-
 
 
 
@@ -59,6 +59,19 @@ ModuleRegistry essentialRegistry[] =
     END_CLASS
     CLASS(Strings)
       STATIC_METHOD("globMatch_(_,_,_,_)", stringsGlobMatch)
+    END_CLASS
+  END_MODULE
+
+  MODULE(json)
+    CLASS(JsonStream)
+      METHOD("stream_begin(_)", jsonStreamBegin)
+      METHOD("stream_end()", jsonStreamEnd)
+      METHOD("next", jsonStreamNext)
+      METHOD("value", jsonStreamValue)
+      METHOD("error_message", jsonStreamErrorMessage)
+      METHOD("lineno", jsonStreamLineNumber)
+      METHOD("pos", jsonStreamPos)
+      STATIC_METHOD("escapechar(_,_)", jsonStreamEscapeChar)
     END_CLASS
   END_MODULE
 
