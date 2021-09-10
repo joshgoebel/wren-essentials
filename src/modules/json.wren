@@ -227,6 +227,14 @@ class Json {
     return Json.encode(value, JsonOptions.abortOnError)
   }
 
+  static parse(value) {
+    return Json.decode(value)
+  }
+
+  static stringify(value) {
+    return Json.encode(value)
+  }
+
   static decode(value, options) {
     var stream = JsonStream.new(value, options)
     stream.begin()
