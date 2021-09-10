@@ -29,6 +29,28 @@ class JsonError {
   }
 }
 
+// pdjson.h:
+
+// enum json_type {
+//     JSON_ERROR = 1, JSON_DONE,
+//     JSON_OBJECT, JSON_OBJECT_END, JSON_ARRAY, JSON_ARRAY_END,
+//     JSON_STRING, JSON_NUMBER, JSON_TRUE, JSON_FALSE, JSON_NULL
+// };
+
+class Token {
+  static isError { 1 }
+  static isDone { 2 }
+  static isObject { 3 }
+  static isObjectEnd { 4 }
+  static isArray { 5 }
+  static isArrayEnd { 6 }
+  static isString { 7 }
+  static isNumeric { 8 }
+  static isBoolTrue { 9 }
+  static isBoolFalse { 10 }
+  static isNull { 11 }
+}
+
 class JsonStream {
   foreign stream_begin(value)
   foreign stream_end()
@@ -39,20 +61,6 @@ class JsonStream {
   foreign pos
   foreign static escapechar(value, options)
 
-  namespace { "wren-essentials.json:" }
-  isNull { namespace + "JSON_NULL" }
-  isString { namespace + "JSON_STRING" }
-  isNumeric { namespace + "JSON_NUMBER" }
-  isBoolTrue { namespace + "JSON_TRUE" }
-  isBoolFalse { namespace + "JSON_FALSE" }
-  isArray { namespace + "JSON_ARRAY" }
-  isArrayEnd { namespace + "JSON_ARRAY_END" }
-  isObject { namespace + "JSON_OBJECT" }
-  isObjectEnd { namespace + "JSON_OBJECT_END" }
-  isDone { namespace + "JSON_DONE" }
-  isError { namespace + "JSON_ERROR" }
-  isInit { namespace + "JSON_INIT" }
-
   result { _result }
   error { _error }
   options { _options }
@@ -61,7 +69,7 @@ class JsonStream {
   construct new(raw, options) {
     _result = {}
     _error = JsonError.empty()
-    _lastEvent = isInit
+    _lastEvent = null
     _raw = raw
     _options = options
   }
@@ -78,7 +86,7 @@ class JsonStream {
   process(event) {
     _lastEvent = event
 
-    if (event == isError) {
+    if (event == Token.isError) {
       _error = JsonError.new(lineno, pos, error_message, true)
       if (JsonOptions.contains(_options, JsonOptions.abortOnError)) {
         end()
@@ -87,32 +95,32 @@ class JsonStream {
       return
     }
 
-    if (event == isDone) {
+    if (event == Token.isDone) {
       return
     }
 
-    if (event == isBoolTrue || event == isBoolFalse) {
-      return (event == isBoolTrue)
+    if (event == Token.isBoolTrue || event == Token.isBoolFalse) {
+      return (event == Token.isBoolTrue)
     }
 
-    if (event == isNumeric) {
+    if (event == Token.isNumeric) {
       return Num.fromString(this.value)
     }
 
-    if (event == isString) {
+    if (event == Token.isString) {
       return this.value
     }
 
-    if (event == isNull) {
+    if (event == Token.isNull) {
       return null
     }
 
-    if (event == isArray) {
+    if (event == Token.isArray) {
       var elements = []
       while (true) {
         event = next
         _lastEvent = event
-        if (event == isArrayEnd) {
+        if (event == Token.isArrayEnd) {
           break
         }
         elements.add(process(event))
@@ -120,12 +128,12 @@ class JsonStream {
       return elements
     }
 
-    if (event == isObject) {
+    if (event == Token.isObject) {
       var elements = {}
       while (true) {
         event = next
         _lastEvent = event
-        if (event == isObjectEnd) {
+        if (event == Token.isObjectEnd) {
             break
         }
         elements[this.value] = process(next)

@@ -15,19 +15,6 @@
   }
 
 // Json API
-const char jsonTypeName[][64] = {
-    [JSON_ERROR]      = "wren-essentials.json:JSON_ERROR",
-    [JSON_DONE]       = "wren-essentials.json:JSON_DONE",
-    [JSON_OBJECT]     = "wren-essentials.json:JSON_OBJECT",
-    [JSON_OBJECT_END] = "wren-essentials.json:JSON_OBJECT_END",
-    [JSON_ARRAY]      = "wren-essentials.json:JSON_ARRAY",
-    [JSON_ARRAY_END]  = "wren-essentials.json:JSON_ARRAY_END",
-    [JSON_STRING]     = "wren-essentials.json:JSON_STRING",
-    [JSON_NUMBER]     = "wren-essentials.json:JSON_NUMBER",
-    [JSON_TRUE]       = "wren-essentials.json:JSON_TRUE",
-    [JSON_FALSE]      = "wren-essentials.json:JSON_FALSE",
-    [JSON_NULL]       = "wren-essentials.json:JSON_NULL",
-};
 
 // We have to use C functions for escaping chars
 // because a bug in compiler throws error when using \ in strings
@@ -77,8 +64,9 @@ void jsonStreamPos(WrenVM * vm) {
 
 void jsonStreamNext(WrenVM * vm) {
   enum json_type type = json_next(jsonStream);
-  if (jsonTypeName[type]) {
-    wrenSetSlotString(vm, 0, jsonTypeName[type]);
+  // 0 in the enum seems to be reserved for no more tokens
+  if (type > 0) {
+    wrenSetSlotDouble(vm, 0, type);
     return;
   }
   wrenSetSlotNull(vm, 0);
