@@ -1,3 +1,6 @@
+// The latest version of this library is available on GitHub;
+// https://github.com/skeeto/pdjson
+
 #ifndef PDJSON_H
 #define PDJSON_H
 

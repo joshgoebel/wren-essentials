@@ -1,3 +1,6 @@
+// The latest version of this library is available on GitHub;
+// https://github.com/skeeto/pdjson
+
 #ifndef _POSIX_C_SOURCE
 #  define _POSIX_C_SOURCE 200112L
 #elif _POSIX_C_SOURCE < 200112L
