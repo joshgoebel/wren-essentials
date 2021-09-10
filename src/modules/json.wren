@@ -191,9 +191,7 @@ class JsonEncoder {
         substrings.add(JsonStream.escapechar(char, _options))
       }
 
-      // Compile error if you use normal escaping sequence
-      // so we have to use bytes to string method for the single " char
-      return String.fromByte(0x22) + substrings.join("") + String.fromByte(0x22)
+      return "\"" + substrings.join("") + "\""
     }
 
     if (value is List) {
