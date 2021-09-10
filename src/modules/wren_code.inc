@@ -139,7 +139,7 @@ static const char* mirrorModuleSource =
 "  }\n"
 "\n"
 "  frames { _stackTrace }\n"
-"  toString { _stackTrace.join(\"\n\") }\n"
+"  toString { _stackTrace.join(\"\\n\") }\n"
 "}\n"
 "\n"
 "class StackTraceFrame {\n"

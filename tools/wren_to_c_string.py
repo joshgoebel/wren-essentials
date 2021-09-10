@@ -25,6 +25,7 @@ def wren_to_c_string(input_path, wren_source_lines, module):
   while (wren_source_lines[-1].strip()==""):
     wren_source_lines.pop()
   for line in wren_source_lines:
+    line = line.replace('\\','\\\\')
     line = line.replace('"', "\\\"")
     line = line.replace("\n", "\\n")
     wren_source += '"' + line + '"\n'
