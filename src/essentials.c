@@ -1,5 +1,6 @@
 #include "essentials.h"
 
+#include "modules/strings.h"
 #include "modules/time.h"
 #include "modules/mirror.h"
 #include "modules/wren_code.inc"
@@ -55,6 +56,9 @@ ModuleRegistry essentialRegistry[] =
     CLASS(Time)
       STATIC_METHOD("now()", timeNow)
       STATIC_METHOD("highResolution()", timeHighResolution)
+    END_CLASS
+    CLASS(Strings)
+      STATIC_METHOD("globMatch_(_,_,_,_)", stringsGlobMatch)
     END_CLASS
   END_MODULE
 

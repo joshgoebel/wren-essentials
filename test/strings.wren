@@ -19,29 +19,6 @@ Testie.new("Strings") { |it, skip|
         Assert.equal("Pride And Prejudice", Strings.titlecase("pride and prejudice"))
     }
 
-    it.should("simpleMatch") {
-        Assert.ok(Strings.simpleMatch("", ""))
-        Assert.not(Strings.simpleMatch("", "b"))
-        Assert.ok(Strings.simpleMatch("", "*"))
-        Assert.not(Strings.simpleMatch("", "?"))
-        Assert.not(Strings.simpleMatch("baaabab", ""))
-        Assert.ok(Strings.simpleMatch("baaabab", "*****ba*****ab"))
-        Assert.ok(Strings.simpleMatch("baaabab", "ba*****ab"))
-        Assert.ok(Strings.simpleMatch("baaabab", "ba*ab"))
-        Assert.not(Strings.simpleMatch("baaabab", "a*ab"))
-        Assert.not(Strings.simpleMatch("baaabab", "a*****ab"))
-        Assert.ok(Strings.simpleMatch("baaabab", "*a*****ab"))
-        Assert.ok(Strings.simpleMatch("baaabab", "ba*ab****"))
-        Assert.ok(Strings.simpleMatch("baaabab", "****"))
-        Assert.ok(Strings.simpleMatch("baaabab", "*"))
-        Assert.not(Strings.simpleMatch("baaabab", "aa?ab"))
-        Assert.ok(Strings.simpleMatch("baaabab", "b*b"))
-        Assert.not(Strings.simpleMatch("baaabab", "a*a"))
-        Assert.ok(Strings.simpleMatch("baaabab", "baaabab"))
-        Assert.not(Strings.simpleMatch("baaabab", "?baaabab"))
-        Assert.ok(Strings.simpleMatch("baaabab", "*baaaba*"))
-    }
-
     it.should("globMatch: *") {
         Assert.ok(Strings.globMatch("abc", "ab*c"))
         Assert.ok(Strings.globMatch("abc", "ab**c"))
@@ -89,7 +66,9 @@ Testie.new("Strings") { |it, skip|
     it.should("globMatch: escaping") {
         Assert.ok(Strings.globMatch("a*b", "a\\*b"))
         Assert.not(Strings.globMatch("ab", "a\\*b"))
-        Assert.ok(Strings.globMatch("a*?[]\\x", "a\\*\\?\\[\\]\\\\\\x"))
+        Assert.ok(Strings.globMatch("a*?[]\\x", "a\\*\\?\\[\\]\\\\x"))
+        // with raw strings
+        Assert.ok(Strings.globMatch("""a*?[]\x""", """a\*\?\[\]\\x"""))
     }
     it.should("globMatch: empty string") {
         Assert.ok(Strings.globMatch("", "*"))
@@ -99,22 +78,20 @@ Testie.new("Strings") { |it, skip|
         Assert.ok(Strings.globMatch("", ""))
     }
     it.should("globMatch: badly formed patterns: unclosed bracket") {
-        Assert.not(Strings.globMatch("a", "[a"))
+        Assert.ok(Strings.globMatch("a", "[a"))
     }
     it.should("globMatch: badly formed patterns: unclosed range") {
         Assert.not(Strings.globMatch("Ax", "[A-]x"))
     }
-    it.should("globMatch: in bracket expr, literal end brackets can be escaped") {
-            Assert.ok(Strings.globMatch("A]x", "A]x"))
-            Assert.not(Strings.globMatch("A]x", "A[]]x"))
-            Assert.ok(Strings.globMatch("A]x", "A[\\]]x"))
-            Assert.not(Strings.globMatch("Ax", "[A-]]x"))
-            Assert.ok(Strings.globMatch("Ax", "[A-\\]]x"))
-            Assert.not(Strings.globMatch("Bx", "[A-]]x"))
-            Assert.ok(Strings.globMatch("Bx", "[A-\\]]x"))
-            Assert.not(Strings.globMatch("hx", "[A-]]x"))
-            Assert.not(Strings.globMatch("hx", "[A-\\]]x"))
-            Assert.not(Strings.globMatch("hx", "[A-]h]x"))
-            Assert.ok(Strings.globMatch("hx", "[A-\\]h]x"))
-        }
+    it.should("globMatch: close bracket in a bracket expr") {
+          Assert.ok(Strings.globMatch("A]x", "A]x"))
+          Assert.ok(Strings.globMatch("Ax", "[A-]]x"))
+          Assert.ok(Strings.globMatch("Bx", "[A-]]x"))
+          Assert.not(Strings.globMatch("hx", "[A-]]x"))
+          Assert.ok(Strings.globMatch("hx", "[A-]h]x"))
+          Assert.not(Strings.globMatch("_", "[_]]"))
+          Assert.ok(Strings.globMatch("_]", "[_]]"))
+          Assert.not(Strings.globMatch("_", "[]_]"))
+          Assert.not(Strings.globMatch("_]", "[]_]"))
+      }
 }.run()
