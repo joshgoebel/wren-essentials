@@ -17,10 +17,21 @@ void stringsGlobMatch(WrenVM *vm) {
     wrenSetSlotBool(vm, 0, result);
 }
 
-/* Commentary to follow...
+/*
+ * tclUtil.c --
  *
- * https://github.com/tcltk/tcl/blob/core-8-6-11/generic/tclUtil.c#L2366
+ *	This file contains utility functions that are used by many Tcl
+ *	commands.
+ *
+ * Copyright © 1987-1993 The Regents of the University of California.
+ * Copyright © 1994-1998 Sun Microsystems, Inc.
+ * Copyright © 2001 Kevin B. Kenny. All rights reserved.
+ *
+ * See the file "license.terms" for information on usage and redistribution of
+ * this file, and for a DISCLAIMER OF ALL WARRANTIES.
  */
+// https://github.com/tcltk/tcl/blob/core-8-6-11/license.terms
+// https://github.com/tcltk/tcl/blob/core-8-6-11/generic/tclUtil.c#L2366
 
 int
 TclByteArrayMatch(
