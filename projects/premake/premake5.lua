@@ -58,6 +58,7 @@ project "wren_essentials"
   includedirs {
     "../../src/cli",
     "../../src/module",
+    "../../src/vendor"
   }
 
 -- wren dependency
