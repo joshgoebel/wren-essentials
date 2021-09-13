@@ -17,6 +17,7 @@ Testie.new("Strings") { |it, skip|
         Assert.equal("Abc", Strings.titlecase("abc"))
         Assert.equal("Mcgregor", Strings.titlecase("mcgregor"))
         Assert.equal("Pride And Prejudice", Strings.titlecase("pride and prejudice"))
+        Assert.equal(Strings.titlecase("PRIDE AND PREJUDICE"), "Pride And Prejudice")
     }
 
     it.should("globMatch: *") {

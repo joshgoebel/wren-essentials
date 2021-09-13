@@ -19,7 +19,7 @@ class Strings {
         return Strings.upcase(s[0]) + s[1..-1]
     }
     static titlecase(s) {
-        return s.split(" ").map {|w| capitalize(w) }.join(" ")
+        return s.split(" ").map {|w| capitalize(downcase(w)) }.join(" ")
     }
 
     /************************************************************************
