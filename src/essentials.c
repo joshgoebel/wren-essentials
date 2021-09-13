@@ -71,7 +71,6 @@ ModuleRegistry essentialRegistry[] =
       METHOD("error_message", jsonStreamErrorMessage)
       METHOD("lineno", jsonStreamLineNumber)
       METHOD("pos", jsonStreamPos)
-      STATIC_METHOD("escapechar(_,_)", jsonStreamEscapeChar)
     END_CLASS
   END_MODULE
 
