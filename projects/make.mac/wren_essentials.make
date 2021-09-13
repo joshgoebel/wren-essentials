@@ -134,6 +134,7 @@ GENERATED += $(OBJDIR)/random-getentropy.o
 GENERATED += $(OBJDIR)/random.o
 GENERATED += $(OBJDIR)/signal.o
 GENERATED += $(OBJDIR)/stream.o
+GENERATED += $(OBJDIR)/strings.o
 GENERATED += $(OBJDIR)/strscpy.o
 GENERATED += $(OBJDIR)/tcp.o
 GENERATED += $(OBJDIR)/thread.o
@@ -181,6 +182,7 @@ OBJECTS += $(OBJDIR)/random-getentropy.o
 OBJECTS += $(OBJDIR)/random.o
 OBJECTS += $(OBJDIR)/signal.o
 OBJECTS += $(OBJDIR)/stream.o
+OBJECTS += $(OBJDIR)/strings.o
 OBJECTS += $(OBJDIR)/strscpy.o
 OBJECTS += $(OBJDIR)/tcp.o
 OBJECTS += $(OBJDIR)/thread.o
@@ -400,6 +402,9 @@ $(OBJDIR)/essentials.o: ../../src/essentials.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/mirror.o: ../../src/modules/mirror.c
+	@echo $(notdir $<)
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/strings.o: ../../src/modules/strings.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/time.o: ../../src/modules/time.c

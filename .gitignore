@@ -49,3 +49,7 @@ deps/libuv/build/XCBuildData/
 
 # macOS
 .DS_Store
+
+# vim
+.*.sw?
+.sw?
