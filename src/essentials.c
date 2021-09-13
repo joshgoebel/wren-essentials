@@ -63,7 +63,7 @@ ModuleRegistry essentialRegistry[] =
   END_MODULE
 
   MODULE(json)
-    CLASS(JsonStream)
+    CLASS(JSONStream)
       METHOD("stream_begin(_)", jsonStreamBegin)
       METHOD("stream_end()", jsonStreamEnd)
       METHOD("next", jsonStreamNext)

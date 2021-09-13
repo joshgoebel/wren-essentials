@@ -1,17 +1,17 @@
 // Extracted from https://github.com/domeengine/dome/blob/develop/src/modules/json.wren
 
-class JsonOptions {
+class JSONOptions {
   static nil { 0 }
   static escapeSlashes { 1 }
   static abortOnError { 2 }
   static checkCircular { 4 }
 
   static contains(options, option) {
-    return ((options & option) != JsonOptions.nil)
+    return ((options & option) != JSONOptions.nil)
   }
 }
 
-class JsonError {
+class JSONError {
   line { _line }
   position { _position }
   message { _message }
@@ -25,7 +25,7 @@ class JsonError {
   }
 
   static empty() {
-    return JsonError.new(0, 0, "", false)
+    return JSONError.new(0, 0, "", false)
   }
 }
 
@@ -51,7 +51,7 @@ class Token {
   static isNull { 11 }
 }
 
-class JsonStream {
+class JSONStream {
   foreign stream_begin(value)
   foreign stream_end()
   foreign next
@@ -68,7 +68,7 @@ class JsonStream {
 
   construct new(raw, options) {
     _result = {}
-    _error = JsonError.empty()
+    _error = JSONError.empty()
     _lastEvent = null
     _raw = raw
     _options = options
@@ -87,8 +87,8 @@ class JsonStream {
     _lastEvent = event
 
     if (event == Token.isError) {
-      _error = JsonError.new(lineno, pos, error_message, true)
-      if (JsonOptions.contains(_options, JsonOptions.abortOnError)) {
+      _error = JSONError.new(lineno, pos, error_message, true)
+      if (JSONOptions.contains(_options, JSONOptions.abortOnError)) {
         end()
         Fiber.abort("JSON error - line %(lineno) pos %(pos): %(error_message)")
       }
@@ -143,17 +143,16 @@ class JsonStream {
   }
 }
 
-// protocol for Json encodable values
+// protocol for JSON encodable values
 // So they can override how to
-class JsonEncodable {
-  toJson {this.toString}
-  toJSON {toJson}
+class JSONEncodable {
+  toJSON {this.toString}
 }
 
-class JsonEncoder {
+class JSONEncoder {
   construct new(options) {
     _options = options
-    _circularStack = JsonOptions.contains(options, JsonOptions.checkCircular) ? [] : null
+    _circularStack = JSONOptions.contains(options, JSONOptions.checkCircular) ? [] : null
   }
 
   isCircle(value) {
@@ -188,7 +187,7 @@ class JsonEncoder {
       // Escape special characters
       var substrings = []
       for (char in value) {
-        substrings.add(JsonStream.escapechar(char, _options))
+        substrings.add(JSONStream.escapechar(char, _options))
       }
 
       return "\"" + substrings.join("") + "\""
@@ -216,8 +215,8 @@ class JsonEncoder {
       return "{" + substrings.join(",") + "}"
     }
 
-    if (value is JsonEncodable) {
-      return value.toJson
+    if (value is JSONEncodable) {
+      return value.toJSON
     }
 
     // Default behaviour is to invoke the toString method
@@ -225,24 +224,24 @@ class JsonEncoder {
   }
 }
 
-class Json {
+class JSON {
 
-  static encode(value, options) { JsonEncoder.new(options).encode(value) }
+  static encode(value, options) { JSONEncoder.new(options).encode(value) }
 
   static encode(value) {
-    return Json.encode(value, JsonOptions.abortOnError)
+    return JSON.encode(value, JSONOptions.abortOnError)
   }
 
   static parse(value) {
-    return Json.decode(value)
+    return JSON.decode(value)
   }
 
   static stringify(value) {
-    return Json.encode(value)
+    return JSON.encode(value)
   }
 
   static decode(value, options) {
-    var stream = JsonStream.new(value, options)
+    var stream = JSONStream.new(value, options)
     stream.begin()
 
     var result = stream.result
@@ -255,11 +254,6 @@ class Json {
   }
 
   static decode(value) {
-    return Json.decode(value, JsonOptions.abortOnError)
+    return JSON.decode(value, JSONOptions.abortOnError)
   }
 }
-
-var JSON = Json
-var JSONOptions = JsonOptions
-var JSONError = JsonError
-var JSONEncodable = JsonEncodable
