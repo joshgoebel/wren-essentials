@@ -14,6 +14,5 @@ void jsonStreamErrorMessage(WrenVM * vm);
 void jsonStreamLineNumber(WrenVM * vm);
 void jsonStreamPos(WrenVM * vm);
 void jsonStreamNext(WrenVM * vm);
-void jsonStreamEscapeChar(WrenVM * vm);
 
 #endif

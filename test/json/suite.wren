@@ -1,5 +1,5 @@
 import "./test-framework" for Expect, Suite, ConsoleReporter
-import "json" for JSON
+import "json" for JSON, JSONOptions
 
 var TestJSON = Suite.new("JSON") { |it|
   var mapString = "{ \"age\": 18, \"name\": \"ethan\", \"cool\": false, \"friends\": null }"
@@ -220,8 +220,15 @@ var TestJSON = Suite.new("JSON") { |it|
       Expect.call(JSON.stringify("hey \t man")).toEqual("\"hey \\t man\"")
     }
 
+    it.should("escape solidus if asked to") {
+      Expect.call(JSON.encode("/var/home/user/",JSONOptions.escapeSolidus))
+        .toEqual("\"\\/var\\/home\\/user\\/\"")
+    }
+
     it.should("escape control characters") {
       Expect.call(JSON.stringify(String.fromByte(1))).toEqual("\"\\u0001\"")
+      Expect.call(JSON.stringify(String.fromByte(14))).toEqual("\"\\u000E\"")
+      Expect.call(JSON.stringify(String.fromByte(19))).toEqual("\"\\u0013\"")
     }
   }
 

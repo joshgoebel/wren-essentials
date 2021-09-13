@@ -2,7 +2,7 @@
 
 class JSONOptions {
   static nil { 0 }
-  static escapeSlashes { 1 }
+  static escapeSolidus { 1 }
   static abortOnError { 2 }
   static checkCircular { 4 }
 
@@ -59,7 +59,6 @@ class JSONStream {
   foreign error_message
   foreign lineno
   foreign pos
-  foreign static escapechar(value, options)
 
   result { _result }
   error { _error }
@@ -149,6 +148,60 @@ class JSONEncodable {
   toJSON {this.toString}
 }
 
+class JSONEscapeChars {
+  static hexchars {["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"]}
+
+  static toHex(byte) {
+    var hex = ""
+    while (byte > 0) {
+      var c = byte % 16
+      hex = hexchars[c] + hex
+      byte = byte >> 4
+    }
+    return hex
+  }
+  
+  static lpad(s, count, with) {
+    while (s.count < count) {
+      s = "%(with)%(s)"
+    }
+    return s
+  }
+
+   static escape(text, options) {
+    var substrings = []
+    // Escape special characters
+    var escapeSolidus = JSONOptions.contains(options, JSONOptions.escapeSolidus)
+    for (char in text) {
+      if (char == "\"") {
+        substrings.add("\\\"")
+      } else if (char == "\\") {
+        substrings.add("\\\\")
+      } else if (char == "\b") {
+        substrings.add("\\b")
+      } else if (char == "\f") {
+        substrings.add("\\f")
+      } else if (char == "\n") {
+        substrings.add("\\n")
+      } else if (char == "\r") {
+        substrings.add("\\r")
+      } else if (char == "\t") {
+        substrings.add("\\t")
+      } else if (char.bytes[0] <= 0x1f) {
+        // Control characters!
+        var byte = char.bytes[0]
+        var hex = lpad(toHex(byte), 4, "0")
+        substrings.add("\\u" + hex)
+      } else if (escapeSolidus && char == "/") {
+        substrings.add("\\/")
+      } else {
+        substrings.add(char)
+      }
+    }
+    return substrings.join("")
+  }
+}
+
 class JSONEncoder {
   construct new(options) {
     _options = options
@@ -184,13 +237,7 @@ class JSONEncoder {
     }
 
     if (value is String) {
-      // Escape special characters
-      var substrings = []
-      for (char in value) {
-        substrings.add(JSONStream.escapechar(char, _options))
-      }
-
-      return "\"" + substrings.join("") + "\""
+      return "\"" + JSONEscapeChars.escape(value, _options) + "\""
     }
 
     if (value is List) {
