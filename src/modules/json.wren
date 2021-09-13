@@ -162,15 +162,14 @@ class JSONEscapeChars {
   }
   
   static lpad(s, count, with) {
-    while (s.count < count) {
-      s = "%(with)%(s)"
+    if (s.count < count) {
+      s = "%(with * (count-s.count))%(s)"
     }
     return s
   }
 
-   static escape(text, options) {
+  static escape(text, options) {
     var substrings = []
-    // Escape special characters
     var escapeSolidus = JSONOptions.contains(options, JSONOptions.escapeSolidus)
     for (char in text) {
       if (char == "\"") {
