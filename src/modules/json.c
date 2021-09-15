@@ -1,35 +1,9 @@
 #include "json.h"
-#include "utf8.h"
 #include "pdjson.h"
-
-// Extracted from DOME engine
-#define VM_ABORT(vm, error) do {\
-  wrenSetSlotString(vm, 0, error);\
-  wrenAbortFiber(vm, 0); \
-} while(false);
-
-#define ASSERT_SLOT_TYPE(vm, slot, type, fieldName) \
-  if (wrenGetSlotType(vm, slot) != type) { \
-    VM_ABORT(vm, #fieldName " was not " #type); \
-    return; \
-  }
-
-// Json API
-
-// We have to use C functions for escaping chars
-// because a bug in compiler throws error when using \ in strings
-// inside Wren files.
-// TODO: Check this in the future.
-enum JsonOptions {
-    JSON_OPTS_NIL = 0,
-    JSON_OPTS_ESCAPE_SLASHES = 1,
-    JSON_OPTS_ABORT_ON_ERROR = 2
-};
 
 json_stream jsonStream[1];
 
 void jsonStreamBegin(WrenVM * vm) {
-  ASSERT_SLOT_TYPE(vm, 1, WREN_TYPE_STRING, "value");
   const char * value = wrenGetSlotString(vm, 1);
   json_open_string(jsonStream, value);
   json_set_streaming(jsonStream, 0);
