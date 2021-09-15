@@ -1,4 +1,5 @@
-// Extracted from https://github.com/domeengine/dome/blob/develop/src/modules/json.wren
+// Mainly based on https://github.com/domeengine/dome/blob/develop/src/modules/json.wren
+// Some code based on https://github.com/brandly/wren-json/blob/master/json.wren
 
 class JSONOptions {
   static nil { 0 }
@@ -142,8 +143,9 @@ class JSONStream {
   }
 }
 
-// protocol for JSON encodable values
-// So they can override how to
+// Protocol for JSON encodable objects
+// Prefer this protocol instead of toString
+// Override toJSON in the child
 class JSONEncodable {
   toJSON {this.toString}
 }
@@ -230,7 +232,6 @@ class JSONEncoder {
       Fiber.abort("Circular JSON")
     }
 
-    // Loosely based on https://github.com/brandly/wren-json/blob/master/json.wren
     if (value is Num || value is Bool || value is Null) {
       return value.toString
     }
@@ -261,6 +262,7 @@ class JSONEncoder {
       return "{" + substrings.join(",") + "}"
     }
 
+    // Check if the object implements toJSON
     if (value is JSONEncodable) {
       return value.toJSON
     }
