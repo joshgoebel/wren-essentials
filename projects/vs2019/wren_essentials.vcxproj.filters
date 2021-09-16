@@ -40,6 +40,9 @@
     <Filter Include="src\modules">
       <UniqueIdentifier>{15ADC5DD-8162-3ED3-0A57-38AA760B35D7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\vendor">
+      <UniqueIdentifier>{EA4CE07F-D604-22CD-3F0C-FB282BE3BCBD}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\deps\libuv\include\uv.h">
@@ -168,14 +171,32 @@
     <ClInclude Include="..\..\deps\wren\src\vm\wren_vm.h">
       <Filter>deps\wren\src\vm</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\binary_libs.h">
+      <Filter>src</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\essentials.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\modules\json.h">
+      <Filter>src\modules</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\modules\mirror.h">
       <Filter>src\modules</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\modules\strings.h">
+      <Filter>src\modules</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\modules\time.h">
       <Filter>src\modules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\vendor\pdjson.h">
+      <Filter>src\vendor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\vendor\tclGlobMatch.h">
+      <Filter>src\vendor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\vendor\utf8.h">
+      <Filter>src\vendor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -314,11 +335,23 @@
     <ClCompile Include="..\..\src\essentials.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\modules\json.c">
+      <Filter>src\modules</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\modules\mirror.c">
+      <Filter>src\modules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\modules\strings.c">
       <Filter>src\modules</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\modules\time.c">
       <Filter>src\modules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vendor\pdjson.c">
+      <Filter>src\vendor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vendor\tclGlobMatch.c">
+      <Filter>src\vendor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

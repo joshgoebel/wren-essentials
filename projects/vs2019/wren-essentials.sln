@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
+# Visual Studio 16
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wren_essentials", "wren_essentials.vcxproj", "{9B70CF2D-07FC-3CF2-100D-C0E67C1799F2}"
 EndProject
 Global

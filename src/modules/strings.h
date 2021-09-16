@@ -4,5 +4,7 @@
 #include "wren.h"
 
 void stringsGlobMatch(WrenVM *vm);
+void stringsUpcase(WrenVM *vm);
+void stringsDowncase(WrenVM *vm);
 
 #endif

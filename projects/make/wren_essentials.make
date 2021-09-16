@@ -19,7 +19,7 @@ endif
 # #############################################
 
 RESCOMP = windres
-INCLUDES += -I../../src/cli -I../../src/module -I../../deps/wren/include -I../../deps/wren/src/vm -I../../deps/wren/src/optional -I../../deps/libuv/include -I../../deps/libuv/src
+INCLUDES += -I../../src/cli -I../../src/module -I../../src/vendor -I../../deps/wren/include -I../../deps/wren/src/vm -I../../deps/wren/src/optional -I../../deps/libuv/include -I../../deps/libuv/src
 FORCE_INCLUDE +=
 ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
 ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
@@ -87,6 +87,8 @@ ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -fPIC -g -std=c99
 ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -fPIC -g
 ALL_LDFLAGS += $(LDFLAGS) -shared -Wl,-soname=libwren_essentials_d.so
 
+else
+  $(error "invalid configuration $(config)")
 endif
 
 # Per File Configurations
@@ -96,57 +98,8 @@ endif
 # File sets
 # #############################################
 
-GENERATED :=
 OBJECTS :=
 
-GENERATED += $(OBJDIR)/async.o
-GENERATED += $(OBJDIR)/core.o
-GENERATED += $(OBJDIR)/dl.o
-GENERATED += $(OBJDIR)/essentials.o
-GENERATED += $(OBJDIR)/fs-poll.o
-GENERATED += $(OBJDIR)/fs.o
-GENERATED += $(OBJDIR)/getaddrinfo.o
-GENERATED += $(OBJDIR)/getnameinfo.o
-GENERATED += $(OBJDIR)/idna.o
-GENERATED += $(OBJDIR)/inet.o
-GENERATED += $(OBJDIR)/linux-core.o
-GENERATED += $(OBJDIR)/linux-inotify.o
-GENERATED += $(OBJDIR)/linux-syscalls.o
-GENERATED += $(OBJDIR)/loop-watcher.o
-GENERATED += $(OBJDIR)/loop.o
-GENERATED += $(OBJDIR)/mirror.o
-GENERATED += $(OBJDIR)/pipe.o
-GENERATED += $(OBJDIR)/poll.o
-GENERATED += $(OBJDIR)/process.o
-GENERATED += $(OBJDIR)/procfs-exepath.o
-GENERATED += $(OBJDIR)/proctitle.o
-GENERATED += $(OBJDIR)/random-devurandom.o
-GENERATED += $(OBJDIR)/random-getrandom.o
-GENERATED += $(OBJDIR)/random-sysctl-linux.o
-GENERATED += $(OBJDIR)/random.o
-GENERATED += $(OBJDIR)/signal.o
-GENERATED += $(OBJDIR)/stream.o
-GENERATED += $(OBJDIR)/strscpy.o
-GENERATED += $(OBJDIR)/sysinfo-loadavg.o
-GENERATED += $(OBJDIR)/tcp.o
-GENERATED += $(OBJDIR)/thread.o
-GENERATED += $(OBJDIR)/threadpool.o
-GENERATED += $(OBJDIR)/time.o
-GENERATED += $(OBJDIR)/timer.o
-GENERATED += $(OBJDIR)/tty.o
-GENERATED += $(OBJDIR)/udp.o
-GENERATED += $(OBJDIR)/uv-common.o
-GENERATED += $(OBJDIR)/uv-data-getter-setters.o
-GENERATED += $(OBJDIR)/version.o
-GENERATED += $(OBJDIR)/wren_compiler.o
-GENERATED += $(OBJDIR)/wren_core.o
-GENERATED += $(OBJDIR)/wren_debug.o
-GENERATED += $(OBJDIR)/wren_opt_meta.o
-GENERATED += $(OBJDIR)/wren_opt_random.o
-GENERATED += $(OBJDIR)/wren_primitive.o
-GENERATED += $(OBJDIR)/wren_utils.o
-GENERATED += $(OBJDIR)/wren_value.o
-GENERATED += $(OBJDIR)/wren_vm.o
 OBJECTS += $(OBJDIR)/async.o
 OBJECTS += $(OBJDIR)/core.o
 OBJECTS += $(OBJDIR)/dl.o
@@ -157,12 +110,14 @@ OBJECTS += $(OBJDIR)/getaddrinfo.o
 OBJECTS += $(OBJDIR)/getnameinfo.o
 OBJECTS += $(OBJDIR)/idna.o
 OBJECTS += $(OBJDIR)/inet.o
+OBJECTS += $(OBJDIR)/json.o
 OBJECTS += $(OBJDIR)/linux-core.o
 OBJECTS += $(OBJDIR)/linux-inotify.o
 OBJECTS += $(OBJDIR)/linux-syscalls.o
 OBJECTS += $(OBJDIR)/loop-watcher.o
 OBJECTS += $(OBJDIR)/loop.o
 OBJECTS += $(OBJDIR)/mirror.o
+OBJECTS += $(OBJDIR)/pdjson.o
 OBJECTS += $(OBJDIR)/pipe.o
 OBJECTS += $(OBJDIR)/poll.o
 OBJECTS += $(OBJDIR)/process.o
@@ -174,8 +129,10 @@ OBJECTS += $(OBJDIR)/random-sysctl-linux.o
 OBJECTS += $(OBJDIR)/random.o
 OBJECTS += $(OBJDIR)/signal.o
 OBJECTS += $(OBJDIR)/stream.o
+OBJECTS += $(OBJDIR)/strings.o
 OBJECTS += $(OBJDIR)/strscpy.o
 OBJECTS += $(OBJDIR)/sysinfo-loadavg.o
+OBJECTS += $(OBJDIR)/tclGlobMatch.o
 OBJECTS += $(OBJDIR)/tcp.o
 OBJECTS += $(OBJDIR)/thread.o
 OBJECTS += $(OBJDIR)/threadpool.o
@@ -202,7 +159,7 @@ OBJECTS += $(OBJDIR)/wren_vm.o
 all: $(TARGET)
 	@:
 
-$(TARGET): $(GENERATED) $(OBJECTS) $(LDDEPS) | $(TARGETDIR)
+$(TARGET): $(OBJECTS) $(LDDEPS) | $(TARGETDIR)
 	$(PRELINKCMDS)
 	@echo Linking wren_essentials
 	$(SILENT) $(LINKCMD)
@@ -228,11 +185,9 @@ clean:
 	@echo Cleaning wren_essentials
 ifeq (posix,$(SHELLTYPE))
 	$(SILENT) rm -f  $(TARGET)
-	$(SILENT) rm -rf $(GENERATED)
 	$(SILENT) rm -rf $(OBJDIR)
 else
 	$(SILENT) if exist $(subst /,\\,$(TARGET)) del $(subst /,\\,$(TARGET))
-	$(SILENT) if exist $(subst /,\\,$(GENERATED)) rmdir /s /q $(subst /,\\,$(GENERATED))
 	$(SILENT) if exist $(subst /,\\,$(OBJDIR)) rmdir /s /q $(subst /,\\,$(OBJDIR))
 endif
 
@@ -396,10 +351,22 @@ $(OBJDIR)/wren_vm.o: ../../deps/wren/src/vm/wren_vm.c
 $(OBJDIR)/essentials.o: ../../src/essentials.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/json.o: ../../src/modules/json.c
+	@echo $(notdir $<)
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/mirror.o: ../../src/modules/mirror.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/strings.o: ../../src/modules/strings.c
+	@echo $(notdir $<)
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/time.o: ../../src/modules/time.c
+	@echo $(notdir $<)
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/pdjson.o: ../../src/vendor/pdjson.c
+	@echo $(notdir $<)
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/tclGlobMatch.o: ../../src/vendor/tclGlobMatch.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 
