@@ -53,7 +53,10 @@ class Token {
 }
 
 class JSONStream {
-  foreign stream_begin(value)
+  // Ensure the stream is always a string
+  stream_begin(value){stream_begin_(value.toString)}
+  foreign stream_begin_(value)
+  
   foreign stream_end()
   foreign next
   foreign value
@@ -280,10 +283,6 @@ class JSON {
     return JSON.encode(value, JSONOptions.abortOnError)
   }
 
-  static parse(value) {
-    return JSON.decode(value)
-  }
-
   static stringify(value) {
     return JSON.encode(value)
   }
@@ -303,5 +302,9 @@ class JSON {
 
   static decode(value) {
     return JSON.decode(value, JSONOptions.abortOnError)
+  }
+
+  static parse(value) {
+    return JSON.decode(value)
   }
 }
