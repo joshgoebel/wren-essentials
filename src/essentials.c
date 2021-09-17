@@ -58,6 +58,8 @@ ModuleRegistry essentialRegistry[] =
       STATIC_METHOD("highResolution()", timeHighResolution)
     END_CLASS
     CLASS(Strings)
+      STATIC_METHOD("upcase_(_)", stringsUpcase)
+      STATIC_METHOD("downcase_(_)", stringsDowncase)
       STATIC_METHOD("globMatch_(_,_,_,_)", stringsGlobMatch)
     END_CLASS
   END_MODULE
