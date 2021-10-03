@@ -1,18 +1,28 @@
+import "ensure" for Ensure
+
 #module=essentials
 class Strings {
-    static upcase(s) {upcase_(s.toString)}
+    static upcase(s) {
+        Ensure.string(s, "s")
+        upcase_(s)
+    }
     foreign static upcase_(s)
 
-    static downcase(s) {downcase_(s.toString)}
+    static downcase(s) {
+        Ensure.string(s, "s")
+        downcase_(s)
+    }
     foreign static downcase_(s)
 
     static capitalize(s) {
+        Ensure.string(s, "s")
         if (s.isEmpty) return ""
         if (s.count == 1) return Strings.upcase(s)
         return Strings.upcase(s[0]) + s[1..-1]
     }
 
     static titlecase(s) {
+        Ensure.string(s, "s")
         return s.split(" ").map {|w| capitalize(downcase(w)) }.join(" ")
     }
 
@@ -53,6 +63,8 @@ class Strings {
      *
      */
     static globMatch(string, pattern) {
+        Ensure.string(string, "string")
+        Ensure.string(pattern, "pattern")
         return globMatch_(
             string,
             string.count,
@@ -63,3 +75,4 @@ class Strings {
 
     foreign static globMatch_(string, strLen, pattern, ptnLen)
 }
+
