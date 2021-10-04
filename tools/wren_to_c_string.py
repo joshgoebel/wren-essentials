@@ -43,7 +43,7 @@ def process_file(path, modules):
     wren_source_lines = f.readlines() + ["\n\n"]
 
   first = wren_source_lines[0]
-  m = re.search(r'#module=(.*)',first)
+  m = re.search(r'//#module=(.*)',first)
   if (m):
     module = m.group(1)
   else:

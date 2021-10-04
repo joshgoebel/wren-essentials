@@ -1,4 +1,4 @@
-#module=time
+//#module=time
 class Delorian {
 
 }

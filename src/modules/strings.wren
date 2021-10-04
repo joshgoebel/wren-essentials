@@ -1,16 +1,16 @@
+//#module=essentials
 import "ensure" for Ensure
 
-#module=essentials
 class Strings {
     static upcase(s) {
         Ensure.string(s, "s")
-        upcase_(s)
+        return upcase_(s)
     }
     foreign static upcase_(s)
 
     static downcase(s) {
         Ensure.string(s, "s")
-        downcase_(s)
+        return downcase_(s)
     }
     foreign static downcase_(s)
 
