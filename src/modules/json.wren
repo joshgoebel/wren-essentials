@@ -1,3 +1,5 @@
+import "ensure" for Ensure
+
 // Mainly based on https://github.com/domeengine/dome/blob/develop/src/modules/json.wren
 // Some code based on https://github.com/brandly/wren-json/blob/master/json.wren
 
@@ -54,7 +56,10 @@ class Token {
 
 class JSONStream {
   // Ensure the stream is always a string
-  stream_begin(value){stream_begin_(value.toString)}
+  stream_begin(value) {
+    Ensure.string(value, "value")
+    stream_begin_(value)
+  }
   foreign stream_begin_(value)
   
   foreign stream_end()
