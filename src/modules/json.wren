@@ -1,4 +1,7 @@
-// Extracted from https://github.com/domeengine/dome/blob/develop/src/modules/json.wren
+import "ensure" for Ensure
+
+// Mainly based on https://github.com/domeengine/dome/blob/develop/src/modules/json.wren
+// Some code based on https://github.com/brandly/wren-json/blob/master/json.wren
 
 class JSONOptions {
   static nil { 0 }
@@ -52,7 +55,13 @@ class Token {
 }
 
 class JSONStream {
-  foreign stream_begin(value)
+  // Ensure the stream is always a string
+  stream_begin(value) {
+    Ensure.string(value, "value")
+    stream_begin_(value)
+  }
+  foreign stream_begin_(value)
+  
   foreign stream_end()
   foreign next
   foreign value
@@ -142,8 +151,9 @@ class JSONStream {
   }
 }
 
-// protocol for JSON encodable values
-// So they can override how to
+// Protocol for JSON encodable objects
+// Prefer this protocol instead of toString
+// Override toJSON in the child
 class JSONEncodable {
   toJSON {this.toString}
 }
@@ -230,7 +240,6 @@ class JSONEncoder {
       Fiber.abort("Circular JSON")
     }
 
-    // Loosely based on https://github.com/brandly/wren-json/blob/master/json.wren
     if (value is Num || value is Bool || value is Null) {
       return value.toString
     }
@@ -261,6 +270,7 @@ class JSONEncoder {
       return "{" + substrings.join(",") + "}"
     }
 
+    // Check if the object implements toJSON
     if (value is JSONEncodable) {
       return value.toJSON
     }
@@ -276,10 +286,6 @@ class JSON {
 
   static encode(value) {
     return JSON.encode(value, JSONOptions.abortOnError)
-  }
-
-  static parse(value) {
-    return JSON.decode(value)
   }
 
   static stringify(value) {
@@ -301,5 +307,9 @@ class JSON {
 
   static decode(value) {
     return JSON.decode(value, JSONOptions.abortOnError)
+  }
+
+  static parse(value) {
+    return JSON.decode(value)
   }
 }
