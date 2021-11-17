@@ -244,7 +244,10 @@ static const char* essentialsModuleSource =
 
 // Generated automatically from src/modules/*.wren. Do not edit.
 static const char* jsonModuleSource =
-"// Extracted from https://github.com/domeengine/dome/blob/develop/src/modules/json.wren\n"
+"import \"ensure\" for Ensure\n"
+"\n"
+"// Mainly based on https://github.com/domeengine/dome/blob/develop/src/modules/json.wren\n"
+"// Some code based on https://github.com/brandly/wren-json/blob/master/json.wren\n"
 "\n"
 "class JSONOptions {\n"
 "  static nil { 0 }\n"
@@ -298,7 +301,13 @@ static const char* jsonModuleSource =
 "}\n"
 "\n"
 "class JSONStream {\n"
-"  foreign stream_begin(value)\n"
+"  // Ensure the stream is always a string\n"
+"  stream_begin(value) {\n"
+"    Ensure.string(value, \"value\")\n"
+"    stream_begin_(value)\n"
+"  }\n"
+"  foreign stream_begin_(value)\n"
+"  \n"
 "  foreign stream_end()\n"
 "  foreign next\n"
 "  foreign value\n"
@@ -388,8 +397,9 @@ static const char* jsonModuleSource =
 "  }\n"
 "}\n"
 "\n"
-"// protocol for JSON encodable values\n"
-"// So they can override how to\n"
+"// Protocol for JSON encodable objects\n"
+"// Prefer this protocol instead of toString\n"
+"// Override toJSON in the child\n"
 "class JSONEncodable {\n"
 "  toJSON {this.toString}\n"
 "}\n"
@@ -476,7 +486,6 @@ static const char* jsonModuleSource =
 "      Fiber.abort(\"Circular JSON\")\n"
 "    }\n"
 "\n"
-"    // Loosely based on https://github.com/brandly/wren-json/blob/master/json.wren\n"
 "    if (value is Num || value is Bool || value is Null) {\n"
 "      return value.toString\n"
 "    }\n"
@@ -507,6 +516,7 @@ static const char* jsonModuleSource =
 "      return \"{\" + substrings.join(\",\") + \"}\"\n"
 "    }\n"
 "\n"
+"    // Check if the object implements toJSON\n"
 "    if (value is JSONEncodable) {\n"
 "      return value.toJSON\n"
 "    }\n"
@@ -522,10 +532,6 @@ static const char* jsonModuleSource =
 "\n"
 "  static encode(value) {\n"
 "    return JSON.encode(value, JSONOptions.abortOnError)\n"
-"  }\n"
-"\n"
-"  static parse(value) {\n"
-"    return JSON.decode(value)\n"
 "  }\n"
 "\n"
 "  static stringify(value) {\n"
@@ -548,7 +554,11 @@ static const char* jsonModuleSource =
 "  static decode(value) {\n"
 "    return JSON.decode(value, JSONOptions.abortOnError)\n"
 "  }\n"
-"}";
+"\n"
+"  static parse(value) {\n"
+"    return JSON.decode(value)\n"
+"  }\n"
+"}\n";
 
 // Generated automatically from src/modules/*.wren. Do not edit.
 static const char* timeModuleSource =
